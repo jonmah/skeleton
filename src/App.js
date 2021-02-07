@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+
+import WithSkeleton from './components/WithSkeleton.js'
+import WithoutSkeleton from './components/WithoutSkeleton.js'
 
 function App() {
+  const [data, setData] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    setIsLoading(true)
+
+    // Intentionally delay the function execution
+    new Promise(res => {
+      setTimeout(() => {
+        res()
+      }, 3000)
+    }).then(() => {
+      axios.get('https://reqres.in/api/users?page=2').then(res => {
+        setData(res.data.data)
+        setTimeout(() => setIsLoading(false), 2000)
+      })
+    })
+  }, [])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ul className="contentWrapper">
+        <WithoutSkeleton isLoading={isLoading} data={data} />
+      </ul>
+      <ul className="contentWrapper">
+        <WithSkeleton isLoading={isLoading} data={data} />
+      </ul>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
